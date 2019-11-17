@@ -135,7 +135,7 @@ module Decidim
         def export_votes
           enforce_permission_to :export_votes, :initiative, initiative: current_initiative
 
-          votes = current_initiative.votes.votes.map(&:sha1)
+          votes = current_initiative.votes.from_users.map(&:sha1)
           csv_data = CSV.generate(headers: false) do |csv|
             votes.each do |sha1|
               csv << [sha1]
@@ -151,7 +151,7 @@ module Decidim
         def export_pdf_signatures
           enforce_permission_to :export_pdf_signatures, :initiative, initiative: current_initiative
 
-          @votes = current_initiative.votes.votes
+          @votes = current_initiative.votes.from_users
 
           output = render_to_string(
             pdf: "votes_#{current_initiative.id}",
