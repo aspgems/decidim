@@ -158,7 +158,7 @@ FactoryBot.define do
       signature_type { "online" }
 
       after(:build) do |initiative|
-        initiative.initiative_votes_count = initiative.scoped_type.supports_required + 1
+        initiative.online_votes["total"] = initiative.supports_required + 1
       end
     end
 
@@ -168,7 +168,7 @@ FactoryBot.define do
       signature_type { "online" }
 
       after(:build) do |initiative|
-        initiative.initiative_votes_count = initiative.scoped_type.supports_required - 1
+        initiative.online_votes["total"] = 0
       end
     end
 
@@ -183,6 +183,8 @@ FactoryBot.define do
   factory :initiative_user_vote, class: "Decidim::InitiativesVote" do
     initiative { create(:initiative) }
     author { create(:user, :confirmed, organization: initiative.organization) }
+    hash_id { SecureRandom.uuid }
+    scope { initiative.scope }
   end
 
   factory :organization_user_vote, class: "Decidim::InitiativesVote" do
