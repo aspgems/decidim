@@ -52,6 +52,7 @@ Due to [\#5553](https://github.com/decidim/decidim/pull/5553), SSL is turned on 
 - **decidim-comments**: Update rspec comment_activity_cell_spec to check existence of card__content css class instead of car-data css class[#5779](https://github.com/decidim/decidim/issues/5779)
 - **decidim-initiatives**: Add pages for versioning. [\#5935](https://github.com/decidim/decidim/pull/5935
 
+- **decidim-initiatives**: Add setting in `Decidim::InitiativesType` to enable users to set a custom signature end date in their initiatives. [\#5998](https://github.com/decidim/decidim/pull/5998)
 ### Changed
 
 - **decidim-assemblies**: Replace current meetings hook with highlighted elements hook [\#5897](https://github.com/decidim/decidim/pull/5897)
