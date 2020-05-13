@@ -414,5 +414,9 @@ module Decidim
     ransacker :author_nickname do
       Arel.sql("decidim_users.nickname")
     end
+
+    ransacker :type_id do
+      Arel.sql("decidim_initiatives_type_scopes.decidim_initiatives_types_id")
+    end
   end
 end
