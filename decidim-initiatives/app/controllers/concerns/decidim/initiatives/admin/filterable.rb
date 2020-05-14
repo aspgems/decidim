@@ -14,7 +14,7 @@ module Decidim
           private
 
           def base_query
-            collection
+            collection.left_joins(:area)
           end
 
           def search_field_predicate
@@ -22,13 +22,22 @@ module Decidim
           end
 
           def filters
-            [:state_eq]
+            [:state_eq, :decidim_area_id_eq]
           end
 
           def filters_with_values
             {
-              state_eq: Initiative.states.keys
+              state_eq: Initiative.states.keys,
+              decidim_area_id_eq: current_organization.areas.pluck(:id)
             }
+          end
+
+          def dynamically_translated_filters
+            [:decidim_area_id_eq]
+          end
+
+          def translated_decidim_area_id_eq(id)
+            translated_attribute(Decidim::Area.find_by(id: id).name[I18n.locale.to_s])
           end
         end
       end

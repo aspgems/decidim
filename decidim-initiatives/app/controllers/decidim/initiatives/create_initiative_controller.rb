@@ -17,6 +17,7 @@ module Decidim
       helper InitiativeHelper
       helper_method :similar_initiatives
       helper_method :scopes
+      helper_method :areas
       helper_method :current_initiative
       helper_method :initiative_type
       helper_method :promotal_committee_required?
@@ -72,14 +73,18 @@ module Decidim
       end
 
       def promotal_committee_step(parameters)
+        @form = build_form(Decidim::Initiatives::InitiativeForm, parameters)
+        unless @form.valid?
+          redirect_to previous_wizard_path(validate_form: true)
+          return
+        end
+
         skip_step unless promotal_committee_required?
 
         if session_initiative.has_key?(:id)
           render_wizard
           return
         end
-
-        @form = build_form(Decidim::Initiatives::InitiativeForm, parameters)
 
         CreateInitiative.call(@form, current_user) do
           on(:ok) do |initiative|
@@ -109,12 +114,19 @@ module Decidim
       end
 
       def build_form(klass, parameters)
-        @form = form(klass).from_params(parameters)
+        @form = form(klass).from_params(parameters, extra_context)
+        attributes = @form.attributes_with_values
         attributes = @form.attributes_with_values
         session[:initiative] = session_initiative.merge(attributes)
         @form.valid? if params[:validate_form]
 
         @form
+      end
+
+      def extra_context
+        return {} unless initiative_type_id
+
+        { initiative_type: initiative_type }
       end
 
       def scopes
@@ -126,7 +138,11 @@ module Decidim
       end
 
       def initiative_type
-        @initiative_type ||= InitiativesType.find(session_initiative[:type_id] || @form&.type_id)
+        @initiative_type ||= InitiativesType.find(initiative_type_id)
+      end
+
+      def initiative_type_id
+        session_initiative[:type_id] || @form&.type_id
       end
 
       def session_initiative

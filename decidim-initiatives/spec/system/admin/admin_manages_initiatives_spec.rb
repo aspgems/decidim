@@ -17,11 +17,21 @@ describe "Admin manages initiatives", type: :system do
     Decidim::Initiative.where.not(state: state).sample
   end
 
+  def initiative_with_area(area)
+    Decidim::Initiative.find_by(decidim_area_id: area)
+  end
+
+  def initiative_without_area(area)
+    Decidim::Initiative.where.not(decidim_area_id: area).sample
+  end
+
   include_context "with filterable context"
 
   let(:organization) { create(:organization) }
   let(:user) { create(:user, :admin, organization: organization) }
   let(:model_name) { Decidim::Initiative.model_name }
+  let(:area1) { create :area, organization: organization }
+  let(:area2) { create :area, organization: organization }
 
   STATES.each do |state|
     let!("#{state}_initiative") { create_initiative_with_trait(state) }
@@ -41,6 +51,22 @@ describe "Admin manages initiatives", type: :system do
         it_behaves_like "a filtered collection", options: "State", filter: i18n_state do
           let(:in_filter) { translated(initiative_with_state(state).title) }
           let(:not_in_filter) { translated(initiative_without_state(state).title) }
+        end
+      end
+    end
+
+    Decidim::Area.all.each do |area|
+      i18n_area = area.name[I18n.locale.to_s]
+
+      context "filtering collection by area: #{i18n_area}" do
+        before do
+          create(:initiative, organization: organization, area: area1)
+          create(:initiative, organization: organization, area: area2)
+        end
+
+        it_behaves_like "a filtered collection", options: "Area", filter: i18n_area do
+          let(:in_filter) { translated(initiative_with_area(area).title) }
+          let(:not_in_filter) { translated(initiative_without_area(area).title) }
         end
       end
     end

@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
 shared_examples "create an initiative" do
-  let(:scoped_type) { create(:initiatives_type_scope) }
-  let(:author) { create(:user, organization: scoped_type.type.organization) }
-  let(:form) { form_klass.from_params(form_params).with_context(current_organization: scoped_type.type.organization) }
+  let(:initiative_type) { create(:initiatives_type) }
+  let(:scoped_type) { create(:initiatives_type_scope, type: initiative_type) }
+  let(:author) { create(:user, organization: initiative_type.organization) }
+  let(:form) do
+    form_klass
+      .from_params(form_params)
+      .with_context(
+        current_organization: initiative_type.organization,
+        initiative_type: initiative_type
+      )
+  end
 
   describe "call" do
     let(:form_params) do
@@ -89,6 +97,37 @@ shared_examples "create an initiative" do
 
         expect(initiative.committee_members.accepted.where(user: author)).to exist
       end
-    end
+      context "when the initiative type does not enable custom signature end date" do
+        it "does not set the signature end date" do
+          command.call
+          initiative = Decidim::Initiative.last
+
+          expect(initiative.signature_end_date).to be_nil
+        end
+      end
+
+      context "when the initiative type enables area" do
+        let(:initiative_type) { create(:initiatives_type, :area_enabled) }
+        let(:area) { create(:area, organization: initiative_type.organization) }
+
+        let(:form_params) do
+          {
+            title: "A reasonable initiative title",
+            description: "A reasonable initiative description",
+            type_id: scoped_type.type.id,
+            signature_type: "online",
+            scope_id: scoped_type.scope.id,
+            decidim_user_group_id: nil,
+            area_id: area.id
+          }
+        end
+
+        it "sets the area" do
+          command.call
+          initiative = Decidim::Initiative.last
+
+          expect(initiative.decidim_area_id).to eq(area.id)
+        end
+      end    end
   end
 end

@@ -19,12 +19,14 @@ module Decidim
           type_id: initiatives_type.id,
           scope_id: scope&.scope&.id,
           signature_type: "offline"
-        }
+        }.merge(area)
       end
+      let(:area) { {} }
       let(:context) do
         {
           current_organization: organization,
-          current_component: nil
+          current_component: nil,
+          initiative_type: initiatives_type
         }
       end
 
@@ -39,6 +41,28 @@ module Decidim
         let(:title) { nil }
 
         it { is_expected.to be_invalid }
+      end
+
+      context "when initiative type enables area" do
+        let(:initiatives_type) { create(:initiatives_type, :area_enabled, organization: organization) }
+
+        context "when area is missing" do
+          it { is_expected.to be_valid }
+        end
+
+        context "when area is present and belongs to organization" do
+          let(:area) { { area_id: decidim_area.id } }
+          let(:decidim_area) { create(:area, organization: organization) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when area is present but doesn't belong to organization" do
+          let(:area) { { area_id: decidim_area.id } }
+          let(:decidim_area) { create(:area) }
+
+          it { is_expected.to be_invalid }
+        end
       end
 
       describe "#signature_type_updatable?" do
