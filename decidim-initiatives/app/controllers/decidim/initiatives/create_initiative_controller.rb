@@ -116,7 +116,6 @@ module Decidim
       def build_form(klass, parameters)
         @form = form(klass).from_params(parameters, extra_context)
         attributes = @form.attributes_with_values
-        attributes = @form.attributes_with_values
         session[:initiative] = session_initiative.merge(attributes)
         @form.valid? if params[:validate_form]
 

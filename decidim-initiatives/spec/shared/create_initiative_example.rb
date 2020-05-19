@@ -97,6 +97,7 @@ shared_examples "create an initiative" do
 
         expect(initiative.committee_members.accepted.where(user: author)).to exist
       end
+
       context "when the initiative type does not enable custom signature end date" do
         it "does not set the signature end date" do
           command.call
@@ -128,6 +129,7 @@ shared_examples "create an initiative" do
 
           expect(initiative.decidim_area_id).to eq(area.id)
         end
-      end    end
+      end
+    end
   end
 end
