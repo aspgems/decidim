@@ -14,7 +14,7 @@ module Decidim
           private
 
           def base_query
-            collection.joins(:area, :scoped_type).joins("JOIN decidim_users ON decidim_users.id = decidim_initiatives.decidim_author_id")
+            collection.joins(:scoped_type).left_joins(:area).joins("JOIN decidim_users ON decidim_users.id = decidim_initiatives.decidim_author_id")
           end
 
           def search_field_predicate
