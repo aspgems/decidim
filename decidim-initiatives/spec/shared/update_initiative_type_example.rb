@@ -4,7 +4,7 @@ shared_examples "update an initiative type" do
   let(:organization) { create(:organization) }
   let(:initiative_type) do
     create(:initiatives_type, :online_signature_enabled, :attachments_disabled, :undo_online_signatures_enabled,
-           :custom_signature_end_date_disabled, organization: organization)
+           :custom_signature_end_date_disabled, :area_disabled, organization: organization)
   end
   let(:form) do
     form_klass.from_params(
@@ -24,6 +24,7 @@ shared_examples "update an initiative type" do
         attachments_enabled: true,
         undo_online_signatures_enabled: false,
         custom_signature_end_date_enabled: true,
+        area_enabled: true,
         promoting_committee_enabled: true,
         minimum_committee_members: 7,
         banner_image: Decidim::Dev.test_file("city2.jpeg", "image/jpeg"),
@@ -52,6 +53,7 @@ shared_examples "update an initiative type" do
         expect(initiative_type.attachments_enabled).not_to eq(form_params[:attachments_enabled])
         expect(initiative_type.undo_online_signatures_enabled).not_to eq(form_params[:undo_online_signatures_enabled])
         expect(initiative_type.custom_signature_end_date_enabled).not_to eq(form_params[:custom_signature_end_date_enabled])
+        expect(initiative_type.area_enabled).not_to eq(form_params[:area_enabled])
         expect(initiative_type.minimum_committee_members).not_to eq(form_params[:minimum_committee_members])
       end
     end
@@ -72,6 +74,7 @@ shared_examples "update an initiative type" do
         expect(initiative_type.attachments_enabled).to eq(form_params[:attachments_enabled])
         expect(initiative_type.undo_online_signatures_enabled).to eq(form_params[:undo_online_signatures_enabled])
         expect(initiative_type.custom_signature_end_date_enabled).to eq(form_params[:custom_signature_end_date_enabled])
+        expect(initiative_type.area_enabled).to eq(form_params[:area_enabled])
         expect(initiative_type.minimum_committee_members).to eq(form_params[:minimum_committee_members])
       end
 
