@@ -35,6 +35,12 @@ describe "User prints the initiative", type: :system do
           end
           submit_and_validate
         end
+
+        it "displays initiative attachments" do
+          page.find(".action-icon--edit").click
+          expect(page).to have_link("Edit")
+          expect(page).to have_link("New")
+        end
       end
 
       context "when initiative is in validating state" do
@@ -51,6 +57,32 @@ describe "User prints the initiative", type: :system do
             expect(page).to have_css("#initiative_signature_type[disabled]")
           end
           expect(page).to have_no_css("*[type=submit]")
+        end
+
+        it "displays initiative attachments" do
+          page.find(".action-icon--edit").click
+          expect(page).to have_link("Edit", class: "disabled")
+          expect(page).to have_link("New", class: "disabled")
+        end
+      end
+
+      context "when initiative has attachments enabled" do
+        it "allows to manage attachments" do
+          page.find(".action-icon--edit").click
+          within ".secondary-nav" do
+            expect(page).to have_link("Attachments")
+          end
+        end
+      end
+
+      context "when initiative has attachments disabled" do
+        let(:initiative_type) { create(:initiatives_type, :attachments_disabled, organization: organization) }
+
+        it "does not allow to manage attachments" do
+          page.find(".action-icon--edit").click
+          within ".secondary-nav" do
+            expect(page).not_to have_link("Attachments")
+          end
         end
       end
 
@@ -104,6 +136,12 @@ describe "User prints the initiative", type: :system do
           end
           submit_and_validate
         end
+
+        it "displays initiative attachments" do
+          page.find(".action-icon--edit").click
+          expect(page).to have_link("Edit")
+          expect(page).to have_link("New")
+        end
       end
 
       context "when initiative is in validating state" do
@@ -120,6 +158,12 @@ describe "User prints the initiative", type: :system do
           end
           submit_and_validate
         end
+
+        it "displays initiative attachments" do
+          page.find(".action-icon--edit").click
+          expect(page).to have_link("Edit")
+          expect(page).to have_link("New")
+        end
       end
 
       context "when initiative is in accepted state" do
@@ -135,6 +179,12 @@ describe "User prints the initiative", type: :system do
             expect(page).to have_css("#initiative_decidim_scope_id[disabled]")
             expect(page).to have_css("#initiative_signature_type[disabled]")
           end
+        end
+
+        it "displays initiative attachments" do
+          page.find(".action-icon--edit").click
+          expect(page).to have_link("Edit")
+          expect(page).to have_link("New")
         end
       end
     end

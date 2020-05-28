@@ -3,8 +3,13 @@
 shared_examples "update an initiative type" do
   let(:organization) { create(:organization) }
   let(:initiative_type) do
-    create(:initiatives_type, :online_signature_enabled, :attachments_disabled, :undo_online_signatures_enabled,
-           :custom_signature_end_date_disabled, :area_disabled, organization: organization)
+    create(:initiatives_type,
+           :online_signature_enabled,
+           :attachments_disabled,
+           :undo_online_signatures_enabled,
+           :custom_signature_end_date_disabled,
+           :area_disabled,
+           organization: organization)
   end
   let(:form) do
     form_klass.from_params(

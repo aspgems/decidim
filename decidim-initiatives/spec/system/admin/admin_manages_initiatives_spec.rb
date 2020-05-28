@@ -90,6 +90,12 @@ describe "Admin manages initiatives", type: :system do
       end
     end
 
+    it "can be searched by title" do
+      search_by_text(translated(published_initiative.title))
+
+      expect(page).to have_content(translated(published_initiative.title))
+    end
+
     Decidim::Area.all.each do |area|
       i18n_area = area.name[I18n.locale.to_s]
 

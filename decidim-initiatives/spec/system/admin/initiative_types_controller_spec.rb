@@ -51,8 +51,13 @@ describe "InitiativeTypesController", type: :system do
 
   context "when updating an initiative type" do
     let(:initiatives_type) do
-      create(:initiatives_type, :online_signature_enabled, :attachments_disabled, :undo_online_signatures_enabled,
-             :custom_signature_end_date_disabled, :area_disabled, organization: organization)
+      create(:initiatives_type,
+             :online_signature_enabled,
+             :attachments_disabled,
+             :undo_online_signatures_enabled,
+             :custom_signature_end_date_disabled,
+             :area_disabled,
+             organization: organization)
     end
 
     it "Updates the initiative type" do
