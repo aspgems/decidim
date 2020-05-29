@@ -27,24 +27,37 @@ module Decidim
       end
 
       it "includes the public handler attributes" do
-        expect(find("input#authorization_handler_birthday")["data-date-format"]).to eq("dd/mm/yyyy")
+        expect(find("input#authorization_handler_date_of_birth")["data-date-format"]).to eq("dd/mm/yyyy")
         expect(find("input#authorization_handler_postal_code")["type"]).to eq("text")
         expect(find("input#authorization_handler_document_number")["type"]).to eq("text")
+        expect(find("input#authorization_handler_name_and_surname")["type"]).to eq("text")
       end
 
       it "does not include other handler attributes" do
         expect(find("input#authorization_handler_id")).to eq(nil)
         expect(find("input#authorization_handler_user")).to eq(nil)
       end
+
+      context "when there are scopes" do
+        let(:user) { create(:user) }
+        let!(:scope) { create(:scope, organization: user.organization) }
+        let(:record) do
+          DummyAuthorizationHandler.new(user: user)
+        end
+
+        it "includes a scopes selector" do
+          expect(find("select#authorization_handler_scope_id").children.first["value"]).to eq(scope.id.to_s)
+        end
+      end
     end
 
     describe "input" do
       it "renders a single field for an attribute" do
-        html = Nokogiri::HTML(builder.input(:birthday))
+        html = Nokogiri::HTML(builder.input(:date_of_birth))
 
-        expect(html.css("label[for='authorization_handler_birthday']").length).to eq(1)
+        expect(html.css("label[for='authorization_handler_date_of_birth']").length).to eq(1)
         expect(html.css("input[type='text']").length).to eq(1)
-        expect(html.css("#authorization_handler_birthday").length).to eq(1)
+        expect(html.css("#authorization_handler_date_of_birth").length).to eq(1)
       end
 
       context "when specifying the input type" do
@@ -67,11 +80,13 @@ module Decidim
           handler_name: String,
           document_number: String,
           postal_code: String,
-          birthday: Date
+          date_of_birth: Date,
+          scope_id: Integer,
+          name_and_surname: String
         }
       end
 
-      it { is_expected.to eq(public_attributes) }
+      it { is_expected.to match_array(public_attributes) }
     end
   end
 end
