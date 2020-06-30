@@ -88,6 +88,10 @@ module Decidim
           @area ||= current_organization.areas.find_by(id: area_id)
         end
 
+        def area
+          @area ||= current_organization.areas.find_by(id: area_id)
+        end
+
         private
 
         def type

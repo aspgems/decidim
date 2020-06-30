@@ -2,31 +2,6 @@
 
 ## [Unreleased](https://github.com/decidim/decidim/tree/HEAD)
 
-### Upgrade notes
-
-- **Endorsements**
-
-This new version of Decidim has extracted the Endorsement feature into a generic concern that can now be applied to many resources.
-To keep current Decidim::Proposals::Proposal's endorsement information, endorsements are copied into the new `Decidim::Endorsable` tables and counter cache columns. This is done via migrations.
-
-After this, `Decidim::Proposals::ProposalEndorsement` and the corresponding counter cache column in `decidim_proposals_proposal.proposal_endorsements_count` should be removed. To do so, Decidim will provide the corresponding migration in the next release.
-
-- **Data portability**
-
-Thanks to [\#5342](https://github.com/decidim/decidim/pull/5342), Decidim now supports removal of user's data portability expired files from Amazon S3. Check out the [scheduled tasks in the getting started guide](https://github.com/decidim/decidim/blob/master/docs/getting_started.md#scheduled-tasks) for information in how to configure it.
-
-- **SSL is forced on by default**
-
-Due to [\#5553](https://github.com/decidim/decidim/pull/5553), SSL is turned on by default.
-
-- **New "extras" key in authorization metadata**
-
-[\#6044](https://github.com/decidim/decidim/pull/6044) adds the possibility to have an "extras" key in the Authentication metadata that will be ignored. For example when
-signing an initiative (decidim-initiatives/app/forms/decidim/initiatives/vote_form.rb) or on Authorization renewal (decidim-verifications/app/cells/decidim/verifications/authorization_metadata/show.erb).
-
-This key may be used to persist whatever information related to the user's authentication that should not be used for authenticating her.
-The use case that originated this change is the persistence of the user's gender for statistical uses.
-
 ### Added
 
 - **decidim-initiatives**: Send notification when signature threshold reached. [\#6098](https://github.com/decidim/decidim/pull/6098)
@@ -119,17 +94,6 @@ The use case that originated this change is the persistence of the user's gender
 - **decidim-initiatives**: Add setting in `Decidim::InitiativesType` to enable users to set a custom signature end date in their initiatives. [\#5998](https://github.com/decidim/decidim/pull/5998)
 ### Changed
 
-- **decidim-admin**, **decidim-core**: Improve explanation on image management on Layout Appearance. [\#6089](https://github.com/decidim/decidim/pull/6089)
-- **decidim-initiatives**: Change initiatives committee request permission to prevent homepage redirection. [\#6115](https://github.com/decidim/decidim/pull/6115)
-- **decidim-accountability**, **decidim-core**, **decidim-meetings**, **decidim-proposals**: Optimize queries for performance in Homepage, process page, proposals page and coauthorable cell. [\#5903](https://github.com/decidim/decidim/pull/5903)
-- **decidim-assemblies**: Replace current meetings hook with highlighted elements hook [\#5897](https://github.com/decidim/decidim/pull/5897)
-- **decidim-core**: Change the map marker color to the Decidim primary color [\#5870](https://github.com/decidim/decidim/pull/5870)
-- **decidim-core**: Add whitespace: nowrap style to compact buttons. [\#5891](https://github.com/decidim/decidim/pull/5891)
-- **decidim-initiatives**: Ignore new "extras" key when checking authorization/variation metadata [\#6044](https://github.com/decidim/decidim/pull/6044)
-- **decidim-assemblies**: Change user permission to list assemblies. Users can only list the assemblies that they have been assigned permission [\#5944](https://github.com/decidim/decidim/pull/5944)
-- **decidim-accountability**: Using the new proposals selector for choosing result proposals [\#5863](https://github.com/decidim/decidim/pull/5863)
-- **decidim-meetings**: Using the new proposals selector for choosing meeting close proposals [\#5863](https://github.com/decidim/decidim/pull/5863)
-
 ### Fixed
 
 - **decidim-consultations**: Fix permissions in order to make components inside of questions accessible. [\#6079](https://github.com/decidim/decidim/pull/6079)
@@ -171,11 +135,17 @@ The use case that originated this change is the persistence of the user's gender
 - **decidim-core**: Fix the destroy account command removing relations with spaces [\#6041](https://github.com/decidim/decidim/pull/6041)
 - **decidim-core**: Avoid server hanging up when rendering newsletter templates previews on develoment or test env [\#6096](https://github.com/decidim/decidim/pull/6096)
 - **decidim-initiatives**: Fix attachments related module inclusion [\#6140](https://github.com/decidim/decidim/pull/6140)
+- **decidim-comments**: Fix comments JS errors and delays [\#6193](https://github.com/decidim/decidim/pull/6193)
+- **decidim-elections**: Improve navigation consistency in the admin zone for elections questions and answers [\#6139](https://github.com/decidim/decidim/pull/6139)
+- **decidim-participatory_processes**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
+- **decidim-assemblies**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
+- **decidim-proposals**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
+- **decidim-dev**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
+- **decidim-core**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
+- **decidim-forms**: Fix rubocop errors arising from capybara upgrade [\#6197](https://github.com/decidim/decidim/pull/6197)
 
 ### Removed
 
-- **decidim-assemblies**: Removed legacy `assembly_type` fields. [\#5617](https://github.com/decidim/decidim/pull/5617)
-
 ## Previous versions
 
-Please check [0.21-stable](https://github.com/decidim/decidim/blob/0.21-stable/CHANGELOG.md) for previous changes.
+Please check [release/0.22-stable](https://github.com/decidim/decidim/blob/release/0.22-stable/CHANGELOG.md) for previous changes.

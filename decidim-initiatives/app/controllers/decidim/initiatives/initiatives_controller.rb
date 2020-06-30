@@ -25,6 +25,7 @@ module Decidim
       include Decidim::Initiatives::Orderable
       include TypeSelectorOptions
       include NeedsInitiative
+      include SingleInitiativeType
 
       helper_method :collection, :initiatives, :filter, :stats
 
@@ -78,7 +79,7 @@ module Decidim
       end
 
       def default_filter_area_params
-        %w(all) + Decidim::Area.where(organization: current_organization).pluck(:id).map(&:to_s)
+        %w(all) + current_organization.areas.pluck(:id).map(&:to_s)
       end
 
       def context_params
