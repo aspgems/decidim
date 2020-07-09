@@ -102,7 +102,7 @@ describe "Initiative signing", type: :system do
 
     context "and has signed the initiative" do
       before do
-        initiative.votes.create(author: confirmed_user, scope: initiative.scope)
+        create(:initiative_user_vote, initiative: initiative, author: confirmed_user, scope: initiative.scope)
       end
 
       context "and is not verified" do

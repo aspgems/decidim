@@ -93,5 +93,24 @@ module Decidim
     config_accessor :do_not_require_authorization do
       false
     end
+
+    # How to count votes. Possible options:
+    # - sync. Count them as they are created.
+    # - async. Count them using a delayed job.
+    # - batch. Count them using a periodic task, not each time.
+    # Batch option is tailored for high level of signatures.
+    # Notifications for milestoned, threshold and endorsement will
+    # be sent when votes are counted, so using the same mode.
+    config_accessor :votes_counting_mode do
+      :sync
+    end
+
+    # How to count unvotes. Possible options:
+    # - sync. Count them as they are destroyed.
+    # - async. Count them using a delayed job.
+    # No batch option, since a high level of unvotes is unlikely.
+    config_accessor :unvotes_counting_mode do
+      :sync
+    end
   end
 end

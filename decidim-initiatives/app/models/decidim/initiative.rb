@@ -328,9 +328,10 @@ module Decidim
         counters["total"] ||= 0
         counters["total"] += count
       end
+      last_counted_vote_id = votes.map(&:id).max
 
       # rubocop:disable Rails/SkipsModelValidations
-      update_column("online_votes", online_votes)
+      update_columns(online_votes: online_votes, last_counted_vote_id: last_counted_vote_id)
       # rubocop:enable Rails/SkipsModelValidations
     end
 

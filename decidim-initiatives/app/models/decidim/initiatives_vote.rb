@@ -21,11 +21,6 @@ module Decidim
                class_name: "Decidim::Scope",
                optional: true
 
-    validates :initiative, uniqueness: { scope: [:author, :scope] }
-    validates :initiative, uniqueness: { scope: [:hash_id, :scope] }
-
-    after_commit :update_counter_cache, on: [:create, :destroy]
-
     scope :for_scope, ->(scope) { where(scope: scope) }
 
     # Public: Generates a hashed representation of the initiative support.
@@ -54,10 +49,6 @@ module Decidim
                             .first
 
       first_authorization&.unique_id || author.email
-    end
-
-    def update_counter_cache
-      initiative.update_online_votes_counters
     end
   end
 end

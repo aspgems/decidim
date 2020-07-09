@@ -20,17 +20,11 @@ module Decidim
       def call
         return broadcast(:invalid) if form.invalid?
 
-        percentage_before = initiative.percentage
-
         Initiative.transaction do
           create_votes
         end
 
-        percentage_after = initiative.reload.percentage
-
-        send_notification
-        notify_percentage_change(percentage_before, percentage_after)
-        notify_support_threshold_reached(percentage_after)
+        update_votes_counter
 
         broadcast(:ok, votes)
       end
@@ -65,47 +59,13 @@ module Decidim
         @timestamp_service ||= Decidim.timestamp_service.to_s.safe_constantize
       end
 
-      def send_notification
-        Decidim::EventsManager.publish(
-          event: "decidim.events.initiatives.initiative_endorsed",
-          event_class: Decidim::Initiatives::EndorseInitiativeEvent,
-          resource: initiative,
-          followers: initiative.author.followers
-        )
-      end
-
-      def notify_percentage_change(before, after)
-        percentage = [25, 50, 75, 100].find do |milestone|
-          before < milestone && after >= milestone
+      def update_votes_counter
+        # If mode is batch, we do nothing here, it will be done in a separate process
+        if Decidim::Initiatives.votes_counting_mode == :sync
+          IncreaseVotesCounterJob.perform_now(initiative.id, @votes.map(&:decidim_scope_id), @votes.map(&:id).max)
+        elsif Decidim::Initiatives.votes_counting_mode == :async
+          IncreaseVotesCounterJob.perform_later(initiative.id, @votes.map(&:decidim_scope_id), @votes.map(&:id).max)
         end
-
-        return unless percentage
-
-        Decidim::EventsManager.publish(
-          event: "decidim.events.initiatives.milestone_completed",
-          event_class: Decidim::Initiatives::MilestoneCompletedEvent,
-          resource: initiative,
-          affected_users: [initiative.author],
-          followers: initiative.followers - [initiative.author],
-          extra: {
-            percentage: percentage
-          }
-        )
-      end
-
-      def notify_support_threshold_reached(percentage)
-        return unless percentage >= 100
-
-        Decidim::EventsManager.publish(
-          event: "decidim.events.initiatives.support_threshold_reached",
-          event_class: Decidim::Initiatives::Admin::SupportThresholdReachedEvent,
-          resource: initiative,
-          followers: organization_admins
-        )
-      end
-
-      def organization_admins
-        Decidim::User.where(organization: initiative.organization, admin: true)
       end
     end
   end

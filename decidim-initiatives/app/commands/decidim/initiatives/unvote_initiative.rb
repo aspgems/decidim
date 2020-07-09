@@ -20,7 +20,8 @@ module Decidim
       #
       # Returns nothing.
       def call
-        destroy_initiative_vote
+        unvotes = destroy_initiative_vote
+        update_votes_counter(unvotes)
         broadcast(:ok, @initiative)
       end
 
@@ -29,6 +30,17 @@ module Decidim
       def destroy_initiative_vote
         Initiative.transaction do
           @initiative.votes.where(author: @current_user).destroy_all
+        end
+      end
+
+      def update_votes_counter(unvotes)
+        pending_uncount_votes = unvotes.select { |unvote| unvote.id <= (@initiative.last_counted_vote_id || 0) }
+        return if pending_uncount_votes.empty?
+
+        if Decidim::Initiatives.unvotes_counting_mode == :sync
+          DecreaseVotesCounterJob.perform_now(@initiative.id, pending_uncount_votes.map(&:decidim_scope_id))
+        else
+          DecreaseVotesCounterJob.perform_later(@initiative.id, pending_uncount_votes.map(&:decidim_scope_id))
         end
       end
     end

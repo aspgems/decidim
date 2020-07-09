@@ -77,7 +77,8 @@ module Decidim
                      :initiatives_type_scope,
                      supports_required: 4,
                      type: create(:initiatives_type, organization: organization)
-                   ))
+                   ),
+                   milestones: [25, 50])
           end
 
           before do
@@ -89,8 +90,9 @@ module Decidim
             follower = create(:user, organization: initiative.organization)
             create(:follow, followable: initiative, user: follower)
 
-            expect(Decidim::EventsManager).to receive(:publish)
-              .with(kind_of(Hash))
+            expect(Decidim::EventsManager)
+              .to receive(:publish)
+              .with(hash_including(event: "decidim.events.initiatives.initiative_endorsed"))
 
             expect(Decidim::EventsManager)
               .to receive(:publish)
@@ -116,19 +118,24 @@ module Decidim
                      :initiatives_type_scope,
                      supports_required: 4,
                      type: create(:initiatives_type, organization: organization)
-                   ))
+                   ),
+                   milestones: [25, 50, 75])
           end
 
           before do
             create(:initiative_user_vote, initiative: initiative)
             create(:initiative_user_vote, initiative: initiative)
             create(:initiative_user_vote, initiative: initiative)
-            create(:initiative_user_vote, initiative: initiative)
           end
 
           it "notifies the admins" do
-            expect(Decidim::EventsManager).to receive(:publish)
-              .with(kind_of(Hash))
+            expect(Decidim::EventsManager)
+              .to receive(:publish)
+              .with(hash_including(event: "decidim.events.initiatives.initiative_endorsed"))
+
+            expect(Decidim::EventsManager)
+              .to receive(:publish)
+              .with(hash_including(event: "decidim.events.initiatives.milestone_completed"))
 
             expect(Decidim::EventsManager)
               .to receive(:publish)

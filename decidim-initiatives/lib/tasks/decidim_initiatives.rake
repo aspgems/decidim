@@ -19,6 +19,17 @@ namespace :decidim_initiatives do
     end
   end
 
+  desc "Update votes counter in the initiatives with pending votes to count"
+  task update_votes_counter: :environment do
+    Decidim::Initiative
+      .joins(:votes)
+      .group(:id)
+      .having("COALESCE(last_counted_vote_id, 0) < MAX(decidim_initiatives_votes.id)")
+      .each do |initiative|
+      InitiativeVotesUpdater.new(initiative).update_votes_counter
+    end
+  end
+
   desc "Notify progress on published initiatives"
   task notify_progress: :environment do
     Decidim::Initiative
